@@ -1,2 +1,9 @@
 # To-Do-app
- App que cria uma lista de tarefas.
+
+Check Point II - Front End II
+
+Descrição:
+
+ App que cria uma lista de tarefas. Será utilizado DOM com validações de formulários e consumo de API.
+
+ 
