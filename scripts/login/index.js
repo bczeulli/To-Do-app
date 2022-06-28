@@ -2,12 +2,15 @@
 let emailLogin = document.getElementById("inputEmail");
 let passwordLogin = document.getElementById("inputPassword");
 let botaoLogin = document.getElementById("botaoLogin");
+const toastSucesso = document.getElementById('toastSucesso');
+const toastFracasso = document.getElementById('toastFracasso');
 let emailValidado = false
 let senhaValidada = false
+let token
 
 /* Altera o botão de acesso quando está bloqueado */
 botaoLogin.style.backgroundColor = "#979292A1";
-botaoLogin.innerText = "Bloqueado";
+botaoLogin.innerText = "Acessar";
 
 
 /* Define um objeto para o usuário */
@@ -26,20 +29,78 @@ botaoLogin.addEventListener("click", function (evento) {
 
         /* Normalização das informações*/
         emailLogin = normalizaTextoRetiraEspacos(emailLogin.value);
-        passwordLogin = normalizaTextoRetiraEspacos(passwordLogin.value);
+        ;
 
         //Atribui as informações normalizadas ao objeto do usuário (em JS)
-        objetoUsuario.email = emailLogin;
-        objetoUsuario.password = passwordLogin;
+        objetoUsuario.email = emailLogin
+        objetoUsuario.password = passwordLogin.value;
+
 
         //Transforma o objeto JS em objeto JSON(textual)
         let objetoUsuarioEmJson = JSON.stringify(objetoUsuario);
 
-        console.log(objetoUsuarioEmJson);
-    }
+        //console.log(objetoUsuarioEmJson);
+        
+        let configRequest = {
+            method:"POST",
+            headers: {
+                "Content-type": "Application/json"
+            },
+            body: objetoUsuarioEmJson
+        }
+        
+        fetch("https://ctd-todo-api.herokuapp.com/v1/users/login", configRequest)
+        .then(
+            resultado => {
+                //Verifica se ocorreu sucesso ao fazer o login
+                if (resultado.status == 201 || resultado.status == 200) {
+                    return resultado.json();
+                } else {
+                    //Lança uma exceção em caso de erro no login
+                    throw resultado;
+                }
+            }
+        ).then(
+            resultado => {
+                //Ao obter sucesso, chama a função de sucesso do login
+                loginSucesso(resultado);
+                
+            }
+        ).catch(
+            erro => {
+                //Verifica os status de "senha incorreta ou email incorreto"
+                if (erro.status == 400 || erro.status == 404) {
+                    //Ao obter algum desses status, chama a função erro no login
+                    loginErro("Email e/ou senha inválidos");
+                    
+                }
+
+            }
+        );
+
+} else {
+    console.log("Login inválido");
+}
 
 });
 
+function loginSucesso(resultadoSucesso) {
+    sessionStorage.setItem("authorization", resultadoSucesso.jwt)
+    token = sessionStorage.getItem("authorization")
+    console.log(token);
+    const toast = new bootstrap.Toast(toastSucesso)
+
+    toast.show()
+    
+}
+
+function loginErro(resultadoErro) {
+    console.log(resultadoErro);
+    const toast = new bootstrap.Toast(toastFracasso)
+
+    toast.show()
+    
+}
 
 
 /* Verificando o input de email */
@@ -55,28 +116,29 @@ emailLogin.addEventListener("blur", () => {
         validacaoEmail.innerText = "Email errado"
 
         emailLogin.style.border = "2px solid #E9554EBB"
-        //emailValidado = false
+        
     }
-    //console.log(validaLogin(emailValidado, senhaValidada));
+    validaLogin(emailLogin.value, passwordLogin.value);
 });
 
 /* Verificando o input de senha */
-passwordLogin.addEventListener("keyup", () => {
+passwordLogin.addEventListener("blur", () => {
 
     let validacaoSenha = document.getElementById("validacaoSenha");
+    
 
     if (passwordLogin.value) {
         validacaoSenha.innerText = ""
         passwordLogin.style.border = "2px solid transparent"
-        senhaValidada = true
+        
         
     } else {
         validacaoSenha.innerText = "Campo obrigatório"
         passwordLogin.style.border = "2px solid #E9554EBB"
-        senhaValidada = false
+        
     }
 
-    validaLogin(emailValidado, senhaValidada);
+    validaLogin(emailLogin.value, passwordLogin.value);
 });
 
 
@@ -93,7 +155,7 @@ function validaLogin(email, password) {
 
     } else {
         //False
-        botaoLogin.setAttribute("disabled", true)
+        botaoLogin.setAttribute("disabled", "true")
         botaoLogin.style.backgroundColor = "#979292A1";
         botaoLogin.innerText = "Bloqueado";
         return false;
