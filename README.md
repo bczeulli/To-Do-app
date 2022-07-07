@@ -1,9 +1,2 @@
-# To-Do-app
-
-Check Point II - Front End II
-
-Descrição:
-
- App que cria uma lista de tarefas. Será utilizado DOM com validações de formulários e consumo de API.
-
- 
+# checkpoint02-frontend02
+Aplicação ToDo - Checkpoint 02 da matéria Front End 02

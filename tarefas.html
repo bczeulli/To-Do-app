@@ -5,15 +5,33 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ---------------------- bootstrap -------------------- -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous" defer></script>
 
   <!-- ----------------------------- estilos CSS ----------------------------- -->
   <link rel="stylesheet" href="./styles/tarefas.css">
+  <link rel="stylesheet" href="./styles/skeleton.css">
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
   <!-- ------------------- Biblioteca de icones - Fontawesome -------------------- -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- ----------------------------- sweet alert ----------------------------- -->
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- CDN example (unpkg) -->
+  <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- ---------------------- lógica aplicada nas tarefas ----------------------- -->
+  <script src="./scripts/utils/api-elements.js" defer></script>
+  <script src="./scripts/utils/validation.js" defer></script>
+  <script src="./animations/skeleton.js" defer></script>
+  <script src="./scripts/tasks/move_task.js" defer></script>
+  <script src="./scripts/tasks/tasks.js" defer></script>
+  
 
   <title>To-Do App</title>
 </head>
@@ -25,8 +43,8 @@
     </nav>
 
     <div class="user-info">
-      <p>Nome usuário</p>
-      <div class="user-image"></div>
+      <p id="nomeUsuario"></p>
+      <div class="user-image"><img src="" id="user-image"></div>
       <p id="closeApp">Finalizar sessão</i>
       </p>
     </div>
@@ -34,45 +52,94 @@
 
 
   <form class="nova-tarefa">
-    <div class="not-done "></div>
+    <div class="not-done"></div>
     <input id="novaTarefa" type="text" placeholder="Nova tarefa">
-    <button type="submit">
+    <button id="botaoNovaTarefa" class="button-blocked" type="submit" disabled>
       <img src="./assets/plus.png" alt="Adicionar uma nova tarefa">
     </button>
   </form>
 
-
+  <h2 class="titulo-pendentes">Tarefas pendentes</h2>
   <ul class="tarefas-pendentes">
-    <div>
-      <li class="tarefa">
-        <div class="not-done"></div>
-        <div class="descricao">
-          <p class="nome">Nova tarefa</p>
-          <p class="timestamp">Criada em: 15/07/21</p>
-        </div>
-      </li>
-      <li class="tarefa">
-        <div class="not-done"></div>
-        <div class="descricao">
-          <p class="nome">Nova tarefa</p>
-          <p class="timestamp">Criada em: 15/07/21</p>
-        </div>
-      </li>
-      <li class="tarefa">
-        <div class="not-done"></div>
-        <div class="descricao">
-          <p class="nome">Nova tarefa</p>
-          <p class="timestamp">Criada em: 15/07/21</p>
-        </div>
-      </li>
+    <!-- <div class="skeleton"> -->
 
-    </div>
   </ul>
 
   <h2 class="titulo-terminadas">Tarefas terminadas</h2>
   <ul class="tarefas-terminadas">
 
   </ul>
+
+  <!-- Pop up para sucesso na criação da tarefa -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="toastSuccessCreateTask" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex text-bg-primary border-0">
+        <div class="toast-body">
+          Tarefa criada com sucesso!
+        </div>
+          <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>  
+  </div>
+
+  <!-- Pop up para sucesso na alteração da tarefa -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="toastSuccessEditTask" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex text-bg-primary border-0">
+        <div class="toast-body">
+          Tarefa alterada com sucesso!
+        </div>
+          <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>  
+  </div>
+
+  <!-- Pop up para sucesso na exclusão da tarefa -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="toastSuccessDeleteTask" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex text-bg-primary border-0">
+        <div class="toast-body">
+          Tarefa excluída com sucesso!
+        </div>
+          <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>  
+  </div>
+
+  <!-- Pop up para fracassos -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="toastFail" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex text-bg-danger border-0">
+        <div class="toast-body">
+          Algo deu errado. Tente novamente!
+        </div>
+          <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>  
+  </div>
+
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Editar Tarefa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="message-text" class="col-form-label">Descrição:</label>
+              <textarea class="form-control" id="message-text"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="limpaDados()">Close</button>
+          <button type="button" class="btn btn-primary" onclick="trocarDescricao()">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
 
