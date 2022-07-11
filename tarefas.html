@@ -29,7 +29,8 @@
   <script src="./scripts/utils/api-elements.js" defer></script>
   <script src="./scripts/utils/validation.js" defer></script>
   <script src="./animations/skeleton.js" defer></script>
-  <script src="./scripts/tasks/move_task.js" defer></script>
+  <script src="./animations/spinner.js" defer></script>
+  <script src="./scripts/tasks/handle_task.js" defer></script>
   <script src="./scripts/tasks/tasks.js" defer></script>
   
 
@@ -45,8 +46,7 @@
     <div class="user-info">
       <p id="nomeUsuario"></p>
       <div class="user-image"><img src="" id="user-image"></div>
-      <p id="closeApp">Finalizar sessão</i>
-      </p>
+      <p id="closeApp" data-bs-toggle="modal" data-bs-target="#logout">Finalizar sessão</p>
     </div>
   </header>
 
@@ -55,7 +55,7 @@
     <div class="not-done"></div>
     <input id="novaTarefa" type="text" placeholder="Nova tarefa">
     <button id="botaoNovaTarefa" class="button-blocked" type="submit" disabled>
-      <img src="./assets/plus.png" alt="Adicionar uma nova tarefa">
+      <img id="imagemBotaoNovaTarefa" src="./assets/plus.png" alt="Adicionar uma nova tarefa">
     </button>
   </form>
 
@@ -118,24 +118,20 @@
     </div>  
   </div>
 
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+  <!-- Modal para logout -->
+  <div class="modal fade" id="logout" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Editar Tarefa</h5>
+          <!-- <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5> -->
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form>
-            <div class="mb-3">
-              <label for="message-text" class="col-form-label">Descrição:</label>
-              <textarea class="form-control" id="message-text"></textarea>
-            </div>
-          </form>
+          Você realmente deseja sair?
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="limpaDados()">Close</button>
-          <button type="button" class="btn btn-primary" onclick="trocarDescricao()">Salvar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
+          <button type="button" class="btn btn-danger" onclick="logOut()">Sim</button>
         </div>
       </div>
     </div>
